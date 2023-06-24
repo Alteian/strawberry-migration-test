@@ -1,0 +1,1 @@
+# strawberry-migration-test
