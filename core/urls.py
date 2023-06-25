@@ -51,13 +51,15 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path(
         "graphql/", csrf_exempt(
-            CustomGraphQLView.as_view(
+            GraphQLView.as_view(
                 schema=schema,
                 graphiql=True, 
                 allow_queries_via_get=True,
                 )
             )
         ),
-    path('__debug__/', include(debug_toolbar.urls)),
-    #*static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os 
+import socket
 
 from pathlib import Path
 
@@ -32,9 +33,7 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -48,10 +47,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "strawberry_django",
     "django_extensions",
-    "debug_toolbar",
     "core.user",
     "core.shared",
-    "core.data"
+    "core.data",
+    "strawberry_django_plus",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -78,6 +78,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -130,18 +131,24 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+# Define the STATIC_URL and STATIC_ROOT
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_ROOT = '/static/'
+
+# Add the static files directories
+STATIC_FILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')    
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 INTERNAL_IPS = [
     "127.0.0.1"
 ]
-
+ip = socket.gethostbyname(socket.gethostname())
+INTERNAL_IPS += [ip[:-1] + '1']
 
 DATABASES = {
     "default": {
@@ -160,3 +167,23 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = "user.User"
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',  # Set the desired log level, e.g., DEBUG, INFO, etc.
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

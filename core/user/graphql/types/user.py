@@ -10,3 +10,6 @@ class UserType(strawberry.relay.Node):
     first_name: gql.auto
     last_name: gql.auto
     email: gql.auto
+    @gql.field
+    def mode(self, info) -> str:
+        return self._mode

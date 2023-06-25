@@ -38,6 +38,6 @@ COPY ./ /code/
 
 RUN poetry install
 
-RUN chmod +x ./start_local.sh
-
-ENTRYPOINT [ "./start_local.sh" ]
+#RUN chmod +x ./start_local.sh
+#
+#ENTRYPOINT [ "./start_local.sh" ]

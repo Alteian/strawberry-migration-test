@@ -30,7 +30,7 @@ def jwt_decode_and_is_expired(token):
         return jwt_token
 
 from core.user.graphql.types import UserType
-
+from django.db import models
 @strawberry.type
 class CustomuserConnection(strawberry.relay.Connection[UserType]):
     @classmethod
@@ -78,6 +78,10 @@ class CustomuserConnection(strawberry.relay.Connection[UserType]):
             ),
         )
 
+from strawberry_django_plus import gql
+
+from strawberry_django_plus.relay import ListConnectionWithTotalCount
+from django.db.models import QuerySet
 
 @strawberry.type
 class CustomSeconduserConnection(strawberry.relay.Connection[UserType]):
@@ -129,3 +133,22 @@ class CustomSeconduserConnection(strawberry.relay.Connection[UserType]):
                 ),
             ),
         )
+from django.db import connection
+
+@strawberry.type
+class CustomUserRelayConnection(ListConnectionWithTotalCount[strawberry.relay.NodeType]):
+    @gql.field
+    def total_count(self) -> typing.Optional[int]:
+        """Total quantity of existing nodes."""
+        assert self.nodes is not None
+        total_count = None
+        try:
+            total_count = typing.cast("models.QuerySet[models.Model]", self.nodes).count()
+            print(total_count.explain())
+            print("AHA")
+        except (AttributeError, ValueError, TypeError):
+            if isinstance(self.nodes, typing.Sized):
+                total_count = len(self.nodes)
+                print("len aha")
+        return total_count
+    

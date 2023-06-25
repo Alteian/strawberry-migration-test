@@ -13,6 +13,7 @@ services:
     volumes:
       - .:/code
       - ./manage.py:/code/manage.py
+      - static:/code/staticfiles
       #- static:/opt/services/web/static
       #- media:/opt/services/web/media
     networks:
@@ -38,8 +39,7 @@ services:
       
 volumes:
   postgresql_data:
-  #static:
-  #media:
+  static:
 
 networks:
   pgsql_network:
