@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  web:
+    image: strawberry_migration
+    container_name: strawberry-migration
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - .:/code
+      - ./manage.py:/code/manage.py
+      #- static:/opt/services/web/static
+      #- media:/opt/services/web/media
+    networks:
+      - pgsql_network
+      - web_network
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    container_name: postgres-strawberry-migration
+    env_file:
+      - .env
+    volumes:
+      - postgresql_data:/var/lib/postgresql
+      - /tmp:/backups
+    ports:
+      - 5432:5432
+    networks:
+      - pgsql_network
+      
+volumes:
+  postgresql_data:
+  #static:
+  #media:
+
+networks:
+  pgsql_network:
+    driver: bridge
+  web_network:
+    driver: bridge
